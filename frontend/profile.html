@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль пользователя</title>
+</head>
+<body>
+
+<h1>Профиль пользователя</h1>
+
+<!-- Аватар -->
+<img src="avatar_placeholder.png" alt="Avatar" id="user-avatar" style="width:100px;height:100px;">
+
+<!-- Кнопка logout -->
+<button id="logoutBtn">Logout</button>
+
+<!-- Кнопка настроек -->
+<button id="settingsBtn">Настройки</button>
+
+<!-- Кнопка "Мои друзья" -->
+<button id="friendsBtn">Мои друзья</button>
+
+<!-- Список каналов -->
+<h2>Мои каналы</h2>
+<ul id="channelsList">
+    <!-- Каналы будут добавлены сюда с помощью JavaScript -->
+</ul>
+
+<!-- Кнопка создания канала -->
+<button id="createChannelBtn">Создать канал</button>
+
+<script>
+    // Пример функции для выхода
+    document.getElementById('logoutBtn').onclick = function() {
+        // Очистка токена и редирект на страницу входа
+        localStorage.removeItem('token');  // Предположим, что ты хранишь токен в localStorage
+        window.location.href = 'index.html';  // Перенаправление на страницу входа
+    };
+
+    // Пример для получения каналов
+    async function fetchChannels() {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://127.0.0.1:8000/channels', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const channels = await response.json();
+            const channelsList = document.getElementById('channelsList');
+            channels.forEach(channel => {
+                const li = document.createElement('li');
+                li.textContent = channel.name;  // Предположим, что у канала есть поле name
+                channelsList.appendChild(li);
+            });
+        } else {
+            console.error('Ошибка при получении каналов:', response.statusText);
+        }
+    }
+
+    // Вызов функции для получения каналов при загрузке страницы
+    window.onload = fetchChannels;
+</script>
+
+</body>
+</html>
