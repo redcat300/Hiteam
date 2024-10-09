@@ -9,6 +9,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     channels = relationship("Channel", back_populates="owner")
+    email = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
 
 
 class Channel(Base):
