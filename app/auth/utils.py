@@ -1,11 +1,13 @@
-import jwt
 import os
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from dotenv import load_dotenv
+from jose import JWTError, jwt  # Импорт JWTError и jwt из библиотеки jose
 
+# Загрузка переменных окружения из файла .env
 load_dotenv()
 
+# Конфигурация
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
@@ -30,10 +32,13 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-# Функция для декодирования JWT
 def decode_access_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except jwt.PyJWTError:
-        return None
+    except JWTError:  # Обрабатываем ошибку, если декодирование не удалось
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
